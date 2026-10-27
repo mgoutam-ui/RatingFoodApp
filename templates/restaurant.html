@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ restaurant.name }} | RateFood{% endblock %}
+{% block content %}
+<main class="container detail-container">
+    <a class="back-link" href="{{ url_for('home') }}">← All restaurants</a>
+    <section class="detail-hero">
+        <div class="detail-info">
+            <p class="eyebrow eyebrow-red">{{ restaurant.category }} · {{ restaurant.location }}</p>
+            <h1>{{ restaurant.name }}</h1>
+            <p class="detail-description">{{ restaurant.description }}</p>
+            <div class="detail-rating">
+                {% if restaurant.review_count %}
+                    <span class="stars stars-large" aria-label="{{ '%.1f'|format(restaurant.average_rating) }} out of 5 stars">★</span>
+                    <strong>{{ "%.1f"|format(restaurant.average_rating) }}</strong>
+                {% else %}
+                    <strong>Not rated yet</strong>
+                {% endif %}
+                <span>{{ restaurant.review_count }} {% if restaurant.review_count == 1 %}review{% else %}reviews{% endif %}</span>
+            </div>
+            <span class="demo-label">Fictional demonstration listing</span>
+        </div>
+        <aside class="distribution-card" aria-label="Rating distribution">
+            <h2>Rating breakdown</h2>
+            {% for star in range(5, 0, -1) %}
+                {% set count = restaurant.distribution[star] %}
+                {% set width = (count / restaurant.review_count * 100) if restaurant.review_count else 0 %}
+                <div class="distribution-row">
+                    <span>{{ star }} <span class="stars">★</span></span>
+                    <span class="distribution-track"><span style="width: {{ width }}%"></span></span>
+                    <span class="distribution-count">{{ count }}</span>
+                </div>
+            {% endfor %}
+        </aside>
+    </section>
+
+    <div class="detail-columns">
+        <section class="reviews-section">
+            <div class="section-heading compact-heading">
+                <div><p class="eyebrow eyebrow-red">COMMUNITY REVIEWS</p><h2>What students say</h2></div>
+            </div>
+            {% if reviews %}
+                <div class="review-list">
+                    {% for review in reviews %}
+                        <article class="review-card">
+                            <div class="review-topline">
+                                <strong>{{ review.username }}</strong>
+                                <span class="review-date">{{ review.updated_at[:10] }}</span>
+                            </div>
+                            <div class="review-stars" aria-label="{{ review.rating }} out of 5 stars">
+                                {% for star in range(1, 6) %}<span class="{% if star <= review.rating %}star-filled{% else %}star-empty{% endif %}">★</span>{% endfor %}
+                            </div>
+                            <p>{{ review.content }}</p>
+                            {% if g.user and review.user_id == g.user.id %}
+                                <a class="edit-link" href="{{ url_for('edit_review', review_id=review.id) }}">Edit your review</a>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state empty-review"><h3>Be the first to rate this spot.</h3><p>Your review helps fellow Broncos choose their next meal.</p></div>
+            {% endif %}
+        </section>
+
+        <aside class="review-form-card">
+            <p class="eyebrow eyebrow-red">{% if user_review %}YOUR REVIEW{% else %}HAVE YOU BEEN HERE?{% endif %}</p>
+            <h2>{% if user_review %}Update your rating{% else %}Leave a review{% endif %}</h2>
+            {% if g.user %}
+                <form method="post" action="{{ url_for('save_review', restaurant_id=restaurant.id) }}" class="stacked-form review-form">
+                    <label for="rating">Your rating</label>
+                    <select id="rating" name="rating" required>
+                        <option value="">Choose 1–5 stars</option>
+                        {% for star in range(5, 0, -1) %}
+                            <option value="{{ star }}" {% if user_review and user_review.rating == star %}selected{% endif %}>{{ star }} {% if star == 1 %}star{% else %}stars{% endif %}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="content">Your review</label>
+                    <textarea id="content" name="content" rows="5" minlength="10" maxlength="500" required placeholder="What should other students know?">{% if user_review %}{{ user_review.content }}{% endif %}</textarea>
+                    <span class="field-help">10–500 characters.</span>
+                    <button class="button button-red button-full" type="submit">{% if user_review %}Save changes{% else %}Post review{% endif %}</button>
+                </form>
+                {% if user_review %}<a class="edit-link standalone-edit" href="{{ url_for('edit_review', review_id=user_review.id) }}">Open full edit page</a>{% endif %}
+            {% else %}
+                <p class="auth-intro">Log in to rate this restaurant and share your experience.</p>
+                <a class="button button-red button-full" href="{{ url_for('login') }}">Log in to review</a>
+                <p class="field-help register-prompt">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+            {% endif %}
+        </aside>
+    </div>
+</main>
+{% endblock %}

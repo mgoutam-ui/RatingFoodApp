@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Edit review | RateFood{% endblock %}
+{% block content %}
+<main class="auth-wrap">
+    <section class="auth-card">
+        <a class="back-link" href="{{ url_for('restaurant_detail', restaurant_id=review.restaurant_id) }}">← Back to restaurant</a>
+        <p class="eyebrow eyebrow-red">YOUR CONTRIBUTION</p>
+        <h1>Edit your review</h1>
+        <form method="post" class="stacked-form review-form">
+            <label for="rating">Your rating</label>
+            <select id="rating" name="rating" required>
+                {% for star in range(5, 0, -1) %}
+                    <option value="{{ star }}" {% if review.rating == star %}selected{% endif %}>{{ star }} {% if star == 1 %}star{% else %}stars{% endif %}</option>
+                {% endfor %}
+            </select>
+            <label for="content">Your review</label>
+            <textarea id="content" name="content" rows="6" minlength="10" maxlength="500" required>{{ review.content }}</textarea>
+            <span class="field-help">10–500 characters.</span>
+            <button class="button button-red button-full" type="submit">Save changes</button>
+        </form>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#9e1b32">
+    <title>{% block title %}RateFood | SCU Food Ratings{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <a class="logo" href="{{ url_for('home') }}">RateFood<span>SCU FOOD RATINGS</span></a>
+        <nav aria-label="Main navigation">
+            <a href="{{ url_for('home') }}">Discover</a>
+            {% if g.user %}
+                <span class="nav-greeting">Hi, {{ g.user.username }}</span>
+                <form action="{{ url_for('logout') }}" method="post" class="inline-form">
+                    <button class="nav-button" type="submit">Log out</button>
+                </form>
+            {% else %}
+                <a href="{{ url_for('login') }}">Log in</a>
+                <a href="{{ url_for('register') }}" class="nav-signup">Create account</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-stack" role="status" aria-live="polite">
+                {% for category, message in messages %}
+                    <p class="flash flash-{{ category }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p>RateFood | Made for the SCU community</p>
+        <p>Initial restaurant listings are fictional demonstration data. Reviews are contributed by users.</p>
+    </footer>
+</body>
+</html>

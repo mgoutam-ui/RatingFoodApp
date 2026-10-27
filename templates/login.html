@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Log in | RateFood{% endblock %}
+{% block content %}
+<main class="auth-wrap">
+    <section class="auth-card">
+        <p class="eyebrow eyebrow-red">WELCOME BACK</p>
+        <h1>Log in to RateFood</h1>
+        <p class="auth-intro">Sign in to share your favorite bites with the SCU community.</p>
+        <form method="post" class="stacked-form">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required maxlength="30" value="{{ username }}">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+            <button class="button button-red button-full" type="submit">Log in</button>
+        </form>
+        <p class="auth-switch">New to RateFood? <a href="{{ url_for('register') }}">Create an account</a></p>
+    </section>
+</main>
+{% endblock %}

@@ -1,104 +1,87 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RateFood | SCU Food Ratings</title>
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">YOUR NEXT GREAT MEAL STARTS HERE</p>
+        <h1>Find your new favorite<br>around SCU.</h1>
+        <p class="hero-copy">Discover campus bites and neighborhood gems, rated by fellow Broncos.</p>
+        <a href="#restaurants" class="button button-light">Explore restaurants <span aria-hidden="true">↓</span></a>
+    </div>
+    <div class="hero-mark" aria-hidden="true">RF</div>
+</section>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-
-    <header class="navbar">
-        <div class="logo">RateFood</div>
-
-        <nav>
-            <a href="/">Home</a>
-            <a href="#restaurants">Restaurants</a>
-            <a href="#">Login</a>
-            <a href="#" class="signup">Sign Up</a>
-        </nav>
-    </header>
-
-    <section class="hero">
-        <h1>Discover the Best Food Around SCU</h1>
-
-        <p>
-            Explore restaurants, read student reviews,
-            and find your next favorite meal.
-        </p>
-
-        <a href="#restaurants" class="hero-button">
-            Explore Restaurants
-        </a>
-    </section>
-
-    <main id="restaurants" class="container">
-
-        <h2>Top Rated Restaurants</h2>
-
-        <p class="subtitle">
-            Discover the most popular food spots around campus.
-        </p>
-
-        <div class="restaurant-grid">
-
-            {% for restaurant in restaurants %}
-
-            <div class="restaurant-card">
-
-                <div class="restaurant-icon">
-                    {% if restaurant.category == "Pizza" %}
-                        🍕
-                    {% elif restaurant.category == "Mexican" %}
-                        🌮
-                    {% elif restaurant.category == "Healthy" %}
-                        🥗
-                    {% else %}
-                        ☕
-                    {% endif %}
-                </div>
-
-                <div class="restaurant-content">
-
-                    <span class="category">
-                        {{ restaurant.category }}
-                    </span>
-
-                    <h3>{{ restaurant.name }}</h3>
-
-                    <p>{{ restaurant.description }}</p>
-
-                    <p class="location">
-                        📍 {{ restaurant.location }}
-                    </p>
-
-                    <div class="rating">
-                        <span>
-                            ⭐ {{ restaurant.rating }}
-                        </span>
-
-                        <span>
-                            {{ restaurant.reviews }} reviews
-                        </span>
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% endfor %}
-
+<main id="restaurants" class="container">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow eyebrow-red">THE BRONCO FOOD SCENE</p>
+            <h2>Top-rated spots</h2>
+            <p class="subtitle">Ranked by community ratings. No reviews yet? Be the first.</p>
         </div>
+        <span class="demo-label">Fictional demo listings</span>
+    </div>
 
-    </main>
+    <form class="filter-bar" action="{{ url_for('home') }}" method="get" role="search">
+        <label class="search-field">
+            <span class="visually-hidden">Search restaurants</span>
+            <input type="search" name="q" value="{{ search_query }}" placeholder="Search restaurants or dishes">
+        </label>
+        <label>
+            <span class="visually-hidden">Filter by category</span>
+            <select name="category">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            <span class="visually-hidden">Filter by location</span>
+            <select name="location">
+                <option value="">All locations</option>
+                {% for location in locations %}
+                    <option value="{{ location }}" {% if location == selected_location %}selected{% endif %}>{{ location }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <button class="button button-red" type="submit">Find food</button>
+        {% if search_query or selected_category or selected_location %}
+            <a class="clear-filters" href="{{ url_for('home') }}">Clear</a>
+        {% endif %}
+    </form>
 
-    <footer>
-        <p>© 2026 RateFood | SCU Food Ratings</p>
-        <p>Sample listings and ratings are fictional.</p>
-    </footer>
-
-</body>
-</html>
+    {% if restaurants %}
+        <div class="restaurant-grid">
+            {% for restaurant in restaurants %}
+                <a class="restaurant-card" href="{{ url_for('restaurant_detail', restaurant_id=restaurant.id) }}">
+                    <div class="restaurant-art art-{{ loop.index0 % 4 }}" aria-hidden="true">
+                        <span>{{ restaurant.category }}</span>
+                        <span class="restaurant-number">0{{ restaurant.id }}</span>
+                    </div>
+                    <div class="restaurant-content">
+                        <div class="card-meta"><span class="category">{{ restaurant.category }}</span><span>{{ restaurant.location }}</span></div>
+                        <h3>{{ restaurant.name }}</h3>
+                        <p>{{ restaurant.description }}</p>
+                        <div class="card-rating">
+                            {% if restaurant.review_count %}
+                                <span class="stars" aria-label="{{ '%.1f'|format(restaurant.average_rating) }} out of 5 stars">★</span>
+                                <strong>{{ "%.1f"|format(restaurant.average_rating) }}</strong>
+                            {% else %}
+                                <span class="unrated">No ratings yet</span>
+                            {% endif %}
+                            <span class="review-count">{{ restaurant.review_count }} {% if restaurant.review_count == 1 %}review{% else %}reviews{% endif %}</span>
+                        </div>
+                        <span class="card-link">View restaurant <span aria-hidden="true">↗</span></span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No restaurants match those filters.</h3>
+            <p>Try a different search or clear the filters.</p>
+            <a class="button button-red" href="{{ url_for('home') }}">See all restaurants</a>
+        </div>
+    {% endif %}
+</main>
+{% endblock %}

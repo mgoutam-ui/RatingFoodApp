@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Create account | RateFood{% endblock %}
+{% block content %}
+<main class="auth-wrap">
+    <section class="auth-card">
+        <p class="eyebrow eyebrow-red">JOIN THE TABLE</p>
+        <h1>Create an account</h1>
+        <p class="auth-intro">Your campus food recommendations start here.</p>
+        <form method="post" class="stacked-form">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_]+" value="{{ username }}">
+            <span class="field-help">3–30 letters, numbers, or underscores.</span>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="128">
+            <span class="field-help">Use at least 8 characters.</span>
+            <button class="button button-red button-full" type="submit">Create account</button>
+        </form>
+        <p class="auth-switch">Already registered? <a href="{{ url_for('login') }}">Log in</a></p>
+    </section>
+</main>
+{% endblock %}

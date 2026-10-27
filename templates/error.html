@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | RateFood{% endblock %}
+{% block content %}
+<main class="empty-state error-page">
+    <p class="eyebrow eyebrow-red">RATEFOOD</p>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <a class="button button-red" href="{{ url_for('home') }}">Back to discover</a>
+</main>
+{% endblock %}
